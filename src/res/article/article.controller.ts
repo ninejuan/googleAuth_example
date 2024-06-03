@@ -1,11 +1,19 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { ArticleService } from './article.service';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
+import { GoogleAuthGuard } from '../auth/guards/google.guard';
+import { CallbackUserData } from '../auth/decorator/auth.decorator';
 
 @Controller('article')
 export class ArticleController {
   constructor(private readonly articleService: ArticleService) {}
+  
+  @Get('/hi')
+  @UseGuards(GoogleAuthGuard)
+  async hi(@CallbackUserData() user) {
+    
+  }
 
   @Post()
   create(@Body() createArticleDto: CreateArticleDto) {

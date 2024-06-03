@@ -2,7 +2,6 @@ interface Auth {
     slogId?: Number;
     slogNick?: String;
     providerData: {
-        provider: String;
         email: String;
         name: String;
         uid?: String;

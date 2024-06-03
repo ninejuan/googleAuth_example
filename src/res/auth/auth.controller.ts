@@ -18,9 +18,6 @@ export class AuthController {
 		@CallbackUserData() userData: any,
 		@Res() res: Response,
 	) {
-		//project-17222372568
-		console.log('controller - userdata' + userData);
-		// console.log(res);
 		res.redirect('/');
 	}
 

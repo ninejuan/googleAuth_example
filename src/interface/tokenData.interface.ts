@@ -1,6 +1,10 @@
-interface tokenData {
+interface Token {
     slogId: Number;
     token: String;
-}
+    providerData: {
+        refToken: String;
+        acToken: String;
+    };
+};
 
-export default tokenData;
+export default Token;

@@ -1,8 +1,8 @@
 {
-  "name": "nestauth-example",
+  "name": "nest_google_auth",
   "version": "0.0.1",
   "description": "",
-  "author": "Juan Lee",
+  "author": "",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
