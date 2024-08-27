@@ -4,9 +4,21 @@ import * as session from 'express-session'
 import * as passport from 'passport'
 import { linkToDatabase } from './utils/db.util';
 import { setupSwagger } from './utils/swagger.util';
+import helmet from 'helmet';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.setGlobalPrefix(process.env.GLOBAL_PREFIX);
+  app.enableCors({
+    origin: ['http://localhost:5173'],
+    credentials: true,
+    exposedHeaders: ["Authorization"]
+  });
+
+  app.use(helmet({
+    contentSecurityPolicy: false
+  }));
+
   app.use(session({
     secret: 'abc',
     saveUninitialized: false,
@@ -17,7 +29,6 @@ async function bootstrap() {
   }))
   app.use(passport.initialize())
   app.use(passport.session())
-  
   await linkToDatabase();
   if (process.env.MODE == "DEV") {
     try {
