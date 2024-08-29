@@ -1,10 +1,8 @@
 interface User {
-    nxpid: String;
-    nxppw?: String;
+    google_mail: String;
     nickname?: String;
     description?: String;
     associated?: String;
-    mailaddr?: String;
     profilePhoto?: String;
     refreshToken: String;
 };

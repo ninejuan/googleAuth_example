@@ -3,7 +3,7 @@
 // import { JwtService } from '@nestjs/jwt';
 // import { Repository } from 'typeorm';
 // import { InjectRepository } from '@nestjs/typeorm';
-// import { CreateUserDto } from './dto/create-user.dto';
+// import { CreateAuthDto } from './dto/create-user.dto';
 
 // const fakeUsers = [
 //     {
@@ -44,7 +44,7 @@
 //         const user = await this.userRepo.findOneBy({email})
 //         return user
 //     }
-//     async createUser(userDto: CreateUserDto) {
+//     async createUser(userDto: CreateAuthDto) {
 //         console.log({userDto})
 //         const newUser = this.userRepo.create(userDto)
 //         return this.userRepo.save(newUser)
@@ -55,7 +55,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity'; // Adjust the path to your User entity
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateAuthDto } from './dto/create-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -73,7 +73,7 @@ export class AuthService {
         let existingUser = await this.findUserByEmail(email);
         
         if (!existingUser) {
-            const userDto: CreateUserDto = {
+            const userDto: CreateAuthDto = {
                 email: email,
                 firstName: firstName,
                 lastName: lastName,
@@ -94,7 +94,7 @@ export class AuthService {
         const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
 
         // Optionally, save the refreshToken in the database for additional security checks
-        // await this.saveRefreshToken(user.id, refreshToken);
+        await this.saveRefreshToken(user.id, refreshToken);
 
         return { accessToken, refreshToken };
     }
@@ -118,13 +118,13 @@ export class AuthService {
         return this.userRepo.findOne({ where: { email } });
     }
 
-    async createUser(userDto: CreateUserDto): Promise<User> {
+    async createUser(userDto: CreateAuthDto): Promise<User> {
         const newUser = this.userRepo.create(userDto);
         return await this.userRepo.save(newUser);
     }
 
     // Optional: A method to save refresh tokens to the database if you want to invalidate them later
-    // async saveRefreshToken(userId: number, refreshToken: string) {
-    //     await this.userRepo.update(userId, { refreshToken });
-    // }
+    async saveRefreshToken(userId: number, refreshToken: string) {
+        await this.userRepo.update(userId, { refreshToken });
+    }
 }
