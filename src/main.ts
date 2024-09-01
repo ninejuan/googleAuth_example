@@ -5,6 +5,9 @@ import * as passport from 'passport'
 import { linkToDatabase } from './utils/db.util';
 import { setupSwagger } from './utils/swagger.util';
 import helmet from 'helmet';
+import { config } from 'dotenv';
+
+config(); const env = process.env;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -20,7 +23,7 @@ async function bootstrap() {
   }));
 
   app.use(session({
-    secret: 'abc',
+    secret: env.SESSION_SECRET,
     saveUninitialized: false,
     resave: false,
     cookie: {
@@ -30,7 +33,7 @@ async function bootstrap() {
   app.use(passport.initialize())
   app.use(passport.session())
   await linkToDatabase();
-  if (process.env.MODE == "DEV") {
+  if (env.MODE == "DEV") {
     try {
       setupSwagger(app);
       console.log("Swagger is enabled");
@@ -39,7 +42,7 @@ async function bootstrap() {
     }
   }
   await app.listen(process.env.PORT || 3000).then(() => {
-    console.log(`App is running on Port ${process.env.PORT || 3000}`)
+    console.log(`App is running on Port ${env.PORT || 3000}`)
   }).catch((e) => {
     console.error(e)
   });
