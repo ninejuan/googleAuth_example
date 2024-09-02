@@ -72,7 +72,7 @@ export class AuthService {
         const { email, firstName, lastName, picture, googleId } = user;
 
         // Find the user by email, or create a new one if not found
-        let existingUser = await this.findUserByEmail(email);
+        let existingUser: User = await this.findUserByEmail(email);
 
         if (!existingUser) {
             const userDto: User = {
