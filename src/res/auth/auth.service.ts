@@ -58,6 +58,7 @@ import User from 'src/interface/user.interface';
 import { CreateAuthDto } from './dto/create-user.dto';
 import userSchema from 'src/models/user.schema';
 import { first } from 'rxjs';
+import { JwtPayload } from 'src/interface/jwt-payload.interface';
 
 @Injectable()
 export class AuthService {
@@ -65,14 +66,14 @@ export class AuthService {
 
     constructor(
         private jwtService: JwtService
-    ) {}
+    ) { }
 
     async handleGoogleLogin(user: any) {
         const { email, firstName, lastName, picture, googleId } = user;
 
         // Find the user by email, or create a new one if not found
         let existingUser = await this.findUserByEmail(email);
-        
+
         if (!existingUser) {
             const userDto: User = {
                 google_mail: email,
@@ -88,12 +89,11 @@ export class AuthService {
     }
 
     async generateTokens(user: User) {
-        const payload = { id: user.id, email: user.email };
-        const accessToken = this.jwtService.sign(payload, { expiresIn: '15m' });
+        const payload: JwtPayload = { google_id: user.google_uid, google_mail: user.google_mail };
+        const accessToken = this.jwtService.sign(payload, { expiresIn: '1d' });
         const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
 
-        // Optionally, save the refreshToken in the database for additional security checks
-        await this.saveRefreshToken(user.id, refreshToken);
+        await this.saveRefreshToken(user.google_mail, refreshToken);
 
         return { accessToken, refreshToken };
     }
@@ -113,7 +113,7 @@ export class AuthService {
         }
     }
 
-    async findUserByEmail(email: string): Promise<User | undefined> {
+    async findUserByEmail(email: string) {
         return await userSchema.findOne({ google_mail: email });
     }
 
@@ -122,7 +122,9 @@ export class AuthService {
         return newUser;
     }
 
-    async saveRefreshToken(userId: number, refreshToken: string) {
-        await this.userRepo.update(userId, { refreshToken });
+    async saveRefreshToken(google_mail: String, refreshToken: string) {
+        const user = await this.findUserByEmail(google_mail.toString());
+        user.refreshToken = refreshToken;
+        await user.save();
     }
 }
