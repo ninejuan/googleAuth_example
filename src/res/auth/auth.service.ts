@@ -118,11 +118,10 @@ export class AuthService {
     }
 
     async createUser(userDto: User): Promise<User> {
-        const newUser = await new userSchema(userDto);
+        const newUser = await new userSchema(userDto).save();
         return newUser;
     }
 
-    // Optional: A method to save refresh tokens to the database if you want to invalidate them later
     async saveRefreshToken(userId: number, refreshToken: string) {
         await this.userRepo.update(userId, { refreshToken });
     }
