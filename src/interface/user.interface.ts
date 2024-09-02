@@ -1,10 +1,11 @@
 interface User {
     google_mail: String;
-    nickname?: String;
+    google_uid: String;
+    name?: String;
     description?: String;
     associated?: String;
     profilePhoto?: String;
-    refreshToken: String;
+    refreshToken?: String;
 };
 
 export default User;

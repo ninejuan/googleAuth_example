@@ -54,16 +54,17 @@ import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from './entities/user.entity'; // Adjust the path to your User entity
+import User from 'src/interface/user.interface';
 import { CreateAuthDto } from './dto/create-user.dto';
+import userSchema from 'src/models/user.schema';
+import { first } from 'rxjs';
 
 @Injectable()
 export class AuthService {
     private readonly logger = new Logger(AuthService.name);
 
     constructor(
-        private jwtService: JwtService,
-        @InjectRepository(User) private readonly userRepo: Repository<User>,
+        private jwtService: JwtService
     ) {}
 
     async handleGoogleLogin(user: any) {
@@ -73,13 +74,11 @@ export class AuthService {
         let existingUser = await this.findUserByEmail(email);
         
         if (!existingUser) {
-            const userDto: CreateAuthDto = {
-                email: email,
-                firstName: firstName,
-                lastName: lastName,
-                googleId: googleId,
-                picture: picture,
-                username: email,
+            const userDto: User = {
+                google_mail: email,
+                name: `${lastName} ${firstName}`,
+                google_uid: googleId,
+                profilePhoto: picture,
                 // Add any additional fields required by your User entity
             };
             existingUser = await this.createUser(userDto);
@@ -115,12 +114,12 @@ export class AuthService {
     }
 
     async findUserByEmail(email: string): Promise<User | undefined> {
-        return this.userRepo.findOne({ where: { email } });
+        return await userSchema.findOne({ google_mail: email });
     }
 
-    async createUser(userDto: CreateAuthDto): Promise<User> {
-        const newUser = this.userRepo.create(userDto);
-        return await this.userRepo.save(newUser);
+    async createUser(userDto: User): Promise<User> {
+        const newUser = await new userSchema(userDto);
+        return newUser;
     }
 
     // Optional: A method to save refresh tokens to the database if you want to invalidate them later
