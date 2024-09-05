@@ -3,7 +3,6 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
-import { LocalStrategy } from '../common/strategies/local.strategy';
 import { JwtStrategy } from '../common/strategies/jwt.strategy';
 import { GoogleStrategy } from '../common/strategies/google.strategy';
 import { config } from 'dotenv';
@@ -19,6 +18,6 @@ config(); const env = process.env;
     PassportModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, LocalStrategy, JwtStrategy, GoogleStrategy]
+  providers: [AuthService, JwtStrategy, GoogleStrategy]
 })
 export class AuthModule {}

@@ -67,10 +67,10 @@ export class AuthService {
     async handleGoogleLogin(user: any) {
         const { email, firstName, lastName, picture, googleId } = user;
 
-        // Find the user by email, or create a new one if not found
         let existingUser: User = await this.findUserByEmail(email);
 
         if (!existingUser) {
+            // google.strategy에서 sign-up을 처리하면 이 부분은 영원히 호출되지 않는게 아닐까?
             const userDto: User = {
                 google_mail: email,
                 name: `${lastName} ${firstName}`,
