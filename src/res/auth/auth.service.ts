@@ -66,14 +66,11 @@ export class AuthService {
     ) { }
 
     async handleGoogleLogin(user: any) {
-        console.log('f hgl cal')
         const { email, firstName, lastName, picture, googleId } = user;
 
-        console.log('f hgl cal ube')
         let existingUser: User = await this.findUserByEmail(email);
 
         if (!existingUser) {
-            console.log('usr not esx')
             // google.strategy에서 sign-up을 처리하면 이 부분은 영원히 호출되지 않는게 아닐까?
             const userDto: User = {
                 google_mail: email,
@@ -83,26 +80,19 @@ export class AuthService {
                 // Add any additional fields required by your User entity
             };
             existingUser = await this.createUser(userDto);
-        } else console.log('usr ext')
-
-        console.log('cal gen tkn');
+        }
         const generatedTokens = await this.generateTokens(existingUser);
-        console.log('gtnk')
-        console.log(generatedTokens);
         return generatedTokens;
     }
 
     async generateTokens(user: User) {
-        console.log('f gen tkn cal')
         const payload: JwtPayload = { google_id: user.google_uid, google_mail: user.google_mail };
-        console.log('use jwt svc')
+
         const accessToken = this.jwtService.sign(payload, { expiresIn: '1d' });
         const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
 
-        console.log('cal srt')
         await this.saveRefreshToken(user.google_mail, refreshToken);
 
-        console.log('hel')
         return { accessToken: accessToken, refreshToken: refreshToken };
     }
 
@@ -122,22 +112,19 @@ export class AuthService {
     }
 
     async findUserByEmail(email: String) {
-        console.log('f ube cal')
         const user = await userSchema.findOne({ google_mail: `ninejuany@gmail.com` });
         return user;
     }
 
     async createUser(userDto: User): Promise<User> {
-        console.log('f cur cal')
         const newUser = await new userSchema(userDto).save();
         return newUser;
     }
 
     async saveRefreshToken(google_mail: String, refreshToken: string) {
-        console.log('srt cal')
         const user = await userSchema.findOne({ google_mail: google_mail });
         console.log(refreshToken);
         user.refreshToken = `${refreshToken}`;
-        await user.save().then(() => { console.log('fainz') });
+        await user.save();
     }
 }

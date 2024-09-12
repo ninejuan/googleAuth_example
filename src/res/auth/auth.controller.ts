@@ -19,9 +19,7 @@ export class AuthController {
         @Req() req: Request,
         @Res({ passthrough: true }) response: Response,
     ) {
-        console.log('ctr grd req')
         const user = req.user;
-        console.log('hdl lgn')
         const tokens = await this.authService.handleGoogleLogin(user);
 
         response.cookie('refreshToken', tokens.refreshToken, {

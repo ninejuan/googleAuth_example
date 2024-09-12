@@ -20,17 +20,14 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
     async validate(accessToken: string, refreshToken: string, profile: any, done: VerifyCallback): Promise<any> {
         console.log(accessToken, refreshToken, profile, done);
         const email = profile._json.email;
-        console.log('fid ube')
         const user = await this.authService.findUserByEmail(email);
         if (user) return done(null, user);
-        console.log('usr not esx')
         const userCreated = await this.authService.createUser({
             google_mail: email,
             google_uid: profile.id,
             name: profile._json.name,
             profilePhoto: profile.photos[0].value
         });
-        console.log(`usr crt : ${userCreated.google_uid}`)
         return done(null, userCreated);
     }
 }
