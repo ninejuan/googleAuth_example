@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Injectable } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { Strategy, VerifyCallback } from "passport-google-oauth20";
@@ -17,17 +18,19 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
     }
 
     async validate(accessToken: string, refreshToken: string, profile: any, done: VerifyCallback): Promise<any> {
-        const { emails: [{ value: email }], } = profile
+        console.log(accessToken, refreshToken, profile, done);
+        const email = profile._json.email;
+        console.log('fid ube')
         const user = await this.authService.findUserByEmail(email);
-        console.log({ user })
         if (user) return done(null, user);
+        console.log('usr not esx')
         const userCreated = await this.authService.createUser({
             google_mail: email,
-            google_uid: ``,
-            name: profile.displayName,
+            google_uid: profile.id,
+            name: profile._json.name,
             profilePhoto: profile.photos[0].value
         });
-        console.log({ userCreated })
+        console.log(`usr crt : ${userCreated.google_uid}`)
         return done(null, userCreated);
     }
 }

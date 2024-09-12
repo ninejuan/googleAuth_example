@@ -19,7 +19,9 @@ export class AuthController {
         @Req() req: Request,
         @Res({ passthrough: true }) response: Response,
     ) {
+        console.log('ctr grd req')
         const user = req.user;
+        console.log('hdl lgn')
         const tokens = await this.authService.handleGoogleLogin(user);
 
         response.cookie('refreshToken', tokens.refreshToken, {
@@ -29,7 +31,7 @@ export class AuthController {
             maxAge: 7 * 24 * 60 * 60 * 1000,
         });
 
-        return response.json({ accessToken: tokens.accessToken });
+        return { accessToken: tokens.accessToken };
     }
 
     @Get('refresh')
